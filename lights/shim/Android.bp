@@ -1,0 +1,18 @@
+//
+// SPDX-FileCopyrightText: 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+
+// Exposes Nothing Camera's glyph lights through the qti lights HAL extension
+cc_library_shared {
+    name: "libglyph_lights_shim",
+    vendor: true,
+    srcs: ["glyph_lights_shim.cpp"],
+    shared_libs: [
+        "android.hardware.light-V2-ndk",
+        "libbinder_ndk",
+        "libdl",
+        "liblog",
+    ],
+    version_script: "libglyph_lights_shim.map.txt",
+}
