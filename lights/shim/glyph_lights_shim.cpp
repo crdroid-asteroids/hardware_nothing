@@ -16,7 +16,6 @@
 #include <dlfcn.h>
 #include <log/log.h>
 
-#include <cstdio>
 #include <cstring>
 #include <memory>
 
@@ -39,17 +38,8 @@ bool isGlyphLight(int32_t id) {
     return false;
 }
 
-int32_t glyphBrightness() {
-    static int32_t brightness = [] {
-        int value = 4095;
-        if (FILE* f = fopen("/sys/class/leds/aw20036_led/max_brightness", "r")) {
-            if (fscanf(f, "%d", &value) != 1 || value <= 0) value = 4095;
-            fclose(f);
-        }
-        return value;
-    }();
-    return brightness;
-}
+// Nothing's extension takes 0..4095 (stock calls it with values like 979), not the driver's 0..255
+constexpr int32_t kGlyphBrightness = 4095;
 
 class GlyphLights : public BnLights {
   public:
@@ -64,7 +54,7 @@ class GlyphLights : public BnLights {
         binder_status_t ret = AIBinder_prepareTransaction(mExt.get(), &in);
         if (ret == STATUS_OK) ret = AParcel_writeInt32(in, id);
         if (ret == STATUS_OK) ret = AParcel_writeInt64(in, static_cast<uint32_t>(state.color));
-        if (ret == STATUS_OK) ret = AParcel_writeInt32(in, glyphBrightness());
+        if (ret == STATUS_OK) ret = AParcel_writeInt32(in, kGlyphBrightness);
         AParcel* out = nullptr;
         if (ret == STATUS_OK) ret = AIBinder_transact(mExt.get(), kSetLightExtensionState, &in, &out, 0);
         else AParcel_delete(in);
