@@ -1,0 +1,14 @@
+cc_library_shared {
+    name: "audio.primary.asteroids",
+    vendor: true,
+    relative_install_path: "hw",
+    srcs: ["audio_hw_wrapper.c"],
+    header_libs: [
+        "libaudio_system_headers",
+        "libhardware_headers",
+    ],
+    shared_libs: [
+        "libdl",
+        "liblog",
+    ],
+}
